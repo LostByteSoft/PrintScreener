@@ -17,18 +17,19 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-03-11
+	SetEnv, version, Version 2017-03-27
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
 	SetEnv, number, 1
+	IniRead, sound, PrintScreener.ini, options, sound
 	IniRead, activescreen, PrintScreener.ini, options, activescreen
 	IniRead, activewindows, PrintScreener.ini, options, activewindows
-	IniRead, sound, PrintScreener.ini, options, sound
+	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 
 ;;--- Softwares files ---
 
-	FileInstall, click.mp3, click.mp3, 0
+	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
 	FileInstall, ico_camtake.ico, ico_camtake.ico, 0
 	FileInstall, ico_camera.ico, ico_camera.ico, 0
@@ -40,34 +41,42 @@
 	FileInstall, ico_reboot.ico, ico_reboot.ico, 0
 	FileInstall, ico_monitor.ico, ico_monitor.ico, 0
 	FileInstall, ico_fullscreen.ico, ico_fullscreen.ico, 0
+	FileInstall, ico_HotKeys.ico, ico_HotKeys.ico, 0
+	FileInstall, ico_options.ico, ico_options.ico, 0
 
 ;;--- Menu Tray options ---
 
 	Menu, Tray, NoStandard
-	Menu, tray, add, Hotkey: Printscreen, intervalstart		; Show hotkey
-	Menu, Tray, Icon, Hotkey: Printscreen, ico_camera.ico, 1
+	Menu, tray, add, --= %title% =--, about1
+	Menu, tray, Icon, --= %title% =--, ico_camera.ico, 1
+	Menu, tray, add,
 	Menu, tray, add, Exit PrintScreener, GuiClose			; GuiClose exit program
 	Menu, Tray, Icon, Exit PrintScreener, ico_shut.ico
 	Menu, tray, add, Refresh, doReload 				; Reload the script.
 	Menu, Tray, Icon, Refresh, ico_reboot.ico, 1
-	Menu, tray, add, Secret MsgBox, secret				; empty space
-	Menu, Tray, Icon, Secret MsgBox, ico_lock.ico, 1
+	Menu, tray, add,
+	Menu, tray, add, Hotkey: Printscreen, intervalstart		; Show hotkey
+	Menu, Tray, Icon, Hotkey: Printscreen,  ico_HotKeys.ico, 1
 	Menu, tray, add,
 	Menu, tray, add, About LostByteSoft, about1 			; Creates a new menu item.
 	Menu, Tray, Icon, About LostByteSoft, ico_about.ico, 1
 	Menu, tray, add, Version, Version 				; Show version
 	Menu, Tray, Icon, Version, ico_about.ico, 1
+	Menu, tray, add, Secret MsgBox, secret				; empty space
+	Menu, Tray, Icon, Secret MsgBox, ico_lock.ico, 1
 	Menu, tray, add,
-	Menu, tray, add, Interval take On/Off = %loopback%, startstop
-	Menu, tray, add, Interval take = %interval% Sec., interval 	; Take at interval.
-	Menu, tray, add, Interval stop, stop	 			; stop interval.
-	Menu, tray, add,
+	Menu, tray, add, --= Options =--, about4
+	Menu, Tray, Icon, --= Options =--, ico_options.ico, 1
 	Menu, tray, add, Set take ACTIVE = %activescreen%, setactive 	; set active printscreen
 	Menu, Tray, Icon, Set take ACTIVE = %activescreen%, ico_fullscreen.ico, 1
 	Menu, tray, add, Set take SCREEN = %activewindows%, setscreen 	; set screen printscreen
 	Menu, Tray, Icon, Set take SCREEN = %activewindows%, ico_monitor.ico, 1
+	Menu, tray, add, Set all SCREEN = %allmonitors%, setallmonitors
 	Menu, tray, add, Sound On/Off = %sound%, soundonoff 		; Sound on off
 	Menu, Tray, Icon, Sound On/Off = %sound%, ico_Sound.ico, 1
+	Menu, tray, add, Interval take On/Off = %loopback%, startstop
+	Menu, tray, add, Interval take = %interval% Sec., interval 	; Take at interval.
+	Menu, tray, add, Interval stop, stop	 			; stop interval.
 	Menu, tray, add,
 	Menu, tray, add, Open Pictures Folder, Open 			; Open where files are saved
 	Menu, Tray, Icon, Open Pictures Folder, ico_folder.ico, 1
@@ -90,13 +99,15 @@ start:
 
 	playsound:
 		IfEqual, sound, 0, goto, soundskip
-		SoundPlay, click.mp3
+		SoundPlay, snd_click.mp3
 
 	soundskip:
 		IniRead, activescreen, PrintScreener.ini, options, activescreen
 		IniRead, activewindows, PrintScreener.ini, options, activewindows
+		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 		IfEqual, activewindows, 1, goto, active
 		IfEqual, activescreen, 1, goto, screen
+		IfEqual, allmonitors, 1, goto, allmonitors
 		msgbox, Error (variable?) %activewindows% %activescreen% : Must one variable to be 1 and another to be 0.
 
 	active:
@@ -106,6 +117,18 @@ start:
 	screen:
 		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
+
+	allmonitors:
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+		goto, next
+
+		;;  0 = whole screen
+		;;  1 = current monitor
+		;;  2 = foreground window
+		;;  3 = foreground window - client area
+		;;  4 = rectangle selection
+		;;  5 = object selected with the mouse
+		;;  6 = start in capture mode (can't be combined with other commandline options)
 
 	next:
 		Sleep, 250
@@ -125,7 +148,7 @@ printtray:
 	SoundPlay, click.mp3
 	soundskip2:
 	sleep, 250
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 	Menu, Tray, Icon, ico_camera.ico
 	goto, start
 
@@ -135,7 +158,7 @@ startstop:
 	Menu, Tray, Rename, Interval take On/Off = 0, Interval take On/Off = 1
 	goto, intervalstart
 
-stop:
+	stop:
 	SetEnv, loopback, 0
 	Menu, Tray, Rename, Interval take On/Off = 1, Interval take On/Off = 0
 	Return
@@ -214,22 +237,34 @@ doReload:
 	Goto, start
 
 setactive:
-	IniWrite, 1, PrintScreener.ini, options, activewindows
-	IniWrite, 0, PrintScreener.ini, options, activescreen
-	SetEnv, activewindows, 1
-	SetEnv, activescreen, 0
-	Menu, Tray, Rename, Set take ACTIVE = 0, Set take ACTIVE = 1
-	Menu, Tray, Rename, Set take SCREEN = 1, Set take SCREEN = 0
-	Return
-
-setscreen:
 	IniWrite, 0, PrintScreener.ini, options, activewindows
 	IniWrite, 1, PrintScreener.ini, options, activescreen
+	IniWrite, 0, PrintScreener.ini, options, allmonitors
+	SetEnv, activewindows, 1
+	SetEnv, activescreen, 0
+	SetEnv, allmonitors, 0
+	Reload
+	ExitApp
+
+setscreen:
+	IniWrite, 1, PrintScreener.ini, options, activewindows
+	IniWrite, 0, PrintScreener.ini, options, activescreen
+	IniWrite, 0, PrintScreener.ini, options, allmonitors
 	SetEnv, activewindows, 0
 	SetEnv, activescreen, 1
-	Menu, Tray, Rename, Set take ACTIVE = 1, Set take ACTIVE = 0
-	Menu, Tray, Rename, Set take SCREEN = 0, Set take SCREEN = 1
-	Return
+	SetEnv, allmonitors, 0
+	Reload
+	ExitApp
+
+setallmonitors:
+	IniWrite, 0, PrintScreener.ini, options, activewindows
+	IniWrite, 0, PrintScreener.ini, options, activescreen
+	IniWrite, 1, PrintScreener.ini, options, allmonitors
+	SetEnv, activewindows, 0
+	SetEnv, activescreen, 0
+	SetEnv, allmonitors, 1
+	Reload
+	ExitApp
 
 ;;--- End of script ---
 ;
@@ -246,6 +281,11 @@ setscreen:
 ;
 ;              You just DO WHAT THE FUCK YOU WANT TO.
 ;
+;		     NO FUCKING WARRANTY AT ALL
+;
+;      The warranty is included in your anus. Look carefully you
+;             might miss all theses small characters.
+;
 ;	As is customary and in compliance with current global and
 ;	interplanetary regulations, the author of these pages disclaims
 ;	all liability for the consequences of the advice given here,
@@ -257,4 +297,6 @@ setscreen:
 ;
 ;              LostByteSoft no copyright or copyleft.
 ;
-;;--- End of f       
+;	If you are unhappy with this software i do not care.
+;
+;;--- End of file ---     
