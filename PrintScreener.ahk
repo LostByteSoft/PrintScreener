@@ -7,29 +7,28 @@
 ;;	All files must be in same folder. Where you want.
 ;;	64 bit AHK version : 1.1.24.2 64 bit Unicode
 ;;	Long version : 2017-03-28-14-15-46
+;;	2017-04-07 - switch jpg to png format
 
-;;--- Softwares options ---
+;;--- Softwares var options files ---
 
 	SetWorkingDir, %A_ScriptDir%
 	#SingleInstance Force
 	#Persistent
-
-;;--- Softwares Var ---
+	#NoEnv
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-03-28
+	SetEnv, version, Version 2017-04-07
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
 	SetEnv, number, 1
+
 	IniRead, sound, PrintScreener.ini, options, sound
 	IniRead, activescreen, PrintScreener.ini, options, activescreen
 	IniRead, activewindows, PrintScreener.ini, options, activewindows
 	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 	IniRead, interval, PrintScreener.ini, options, interval
-
-;;--- Softwares files ---
 
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
@@ -99,8 +98,8 @@ start:
 		Menu, Tray, Icon, ico_camtake.ico
 
 	count:
-		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
-		IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.png, goto, playsound
+		IfExist, C:\Users\Public\Pictures\Picture_%number%.png, EnvAdd, number, 1
 		goto, count
 
 	playsound:
@@ -112,22 +111,26 @@ start:
 		IniRead, activewindows, PrintScreener.ini, options, activewindows
 		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 
-		IfEqual, activewindows, 1, goto, active
 		IfEqual, activescreen, 1, goto, screen
+		IfEqual, activewindows, 1, goto, active
 		IfEqual, allmonitors, 1, goto, allmonitors
 
 		msgbox, Error (variable?) %activewindows% %activescreen% %allmonitors%: Must one variable to be 1 and another to be 0.
 
-	active:
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+	screen:
+		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
 
-	screen:
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+	active:
+		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; ONLY the active windows, PUBLIC img folder
 		goto, next
+
 
 	allmonitors:
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; whole screen, PUBLIC img folder
 		goto, next
 
 		;;  0 = whole screen
@@ -137,6 +140,8 @@ start:
 		;;  4 = rectangle selection
 		;;  5 = object selected with the mouse
 		;;  6 = start in capture mode (can't be combined with other commandline options)
+		;;  $U(%d%m%Y_%H%M%S) - %Y%m%d%H%M%S
+		;; view i_options.txt for all options
 
 	next:
 		Sleep, 250
@@ -148,15 +153,15 @@ start:
 printtray:
 	Menu, Tray, Icon, ico_camtake.ico
 	count2:
-	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound2
-	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.png, goto, playsound2
+	IfExist, C:\Users\Public\Pictures\Picture_%number%.png, EnvAdd, number, 1
 	goto, count2
 	playsound2:
 	IfEqual, sound, 0, goto, soundskip2
 	SoundPlay, snd_click.mp3
 	soundskip2:
 	sleep, 250
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 	Menu, Tray, Icon, ico_camera.ico
 	goto, start
 
@@ -219,7 +224,7 @@ GuiClose:
 secret:
 	Menu, Tray, Icon, ico_camtake.ico
 	SoundPlay, snd_click.mp3
-	MsgBox, 0, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number%`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
+	MsgBox, 0, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, ico_camera.ico
 	Return
 
