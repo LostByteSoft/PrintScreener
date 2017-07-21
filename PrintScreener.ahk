@@ -6,8 +6,8 @@
 ;;	Compatibility: Windows
 ;;	All files must be in same folder. Where you want.
 ;;	64 bit AHK version : 1.1.24.2 64 bit Unicode
-;;	Long version : 2017-03-28-14-15-46
 ;;	2017-04-07 - switch jpg to png format
+;;	2017-05-31 - switch png to jpg format
 
 ;;--- Softwares var options files ---
 
@@ -18,7 +18,7 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-04-07
+	SetEnv, version, Version 2017-05-31
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -98,8 +98,8 @@ start:
 		Menu, Tray, Icon, ico_camtake.ico
 
 	count:
-		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.png, goto, playsound
-		IfExist, C:\Users\Public\Pictures\Picture_%number%.png, EnvAdd, number, 1
+		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
+		IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 		goto, count
 
 	playsound:
@@ -119,18 +119,18 @@ start:
 
 	screen:
 		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
 
 	active:
 		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; ONLY the active windows, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 		goto, next
 
 
 	allmonitors:
 		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; whole screen, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 		goto, next
 
 		;;  0 = whole screen
@@ -153,15 +153,15 @@ start:
 printtray:
 	Menu, Tray, Icon, ico_camtake.ico
 	count2:
-	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.png, goto, playsound2
-	IfExist, C:\Users\Public\Pictures\Picture_%number%.png, EnvAdd, number, 1
+	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound2
+	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 	goto, count2
 	playsound2:
 	IfEqual, sound, 0, goto, soundskip2
 	SoundPlay, snd_click.mp3
 	soundskip2:
 	sleep, 250
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.png", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 	Menu, Tray, Icon, ico_camera.ico
 	goto, start
 
