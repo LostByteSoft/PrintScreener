@@ -18,11 +18,13 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-05-31
+	SetEnv, version, Version 2017-10-18-1029
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
 	SetEnv, number, 1
+	SetEnv, logoicon, ico_camera.ico
+	SetEnv, debug, 0
 
 	IniRead, sound, PrintScreener.ini, options, sound
 	IniRead, activescreen, PrintScreener.ini, options, activescreen
@@ -44,69 +46,85 @@
 	FileInstall, ico_fullscreen.ico, ico_fullscreen.ico, 0
 	FileInstall, ico_HotKeys.ico, ico_HotKeys.ico, 0
 	FileInstall, ico_options.ico, ico_options.ico, 0
+	FileInstall, ico_debug.ico, ico_debug.ico, 0
+	FileInstall, ico_pause.ico, ico_pause.ico, 0
 
 ;;--- Menu Tray options ---
 
 	Menu, Tray, NoStandard
-	Menu, tray, add, --= %title% =--, about1
-	Menu, tray, Icon, --= %title% =--, ico_camera.ico, 1
+	Menu, tray, add, ---=== %title% ===---, about
+	Menu, Tray, Icon, ---=== %title% ===---, %logoicon%
+	Menu, tray, add, Show logo, GuiLogo
+	Menu, tray, add, Secret MsgBox, secret					; Secret MsgBox, just show all options and variables of the program
+	Menu, Tray, Icon, Secret MsgBox, ico_lock.ico
+	Menu, tray, add, About && ReadMe, author
+	Menu, Tray, Icon, About && ReadMe, ico_about.ico
+	Menu, tray, add, Author %author%, about
+	menu, tray, disable, Author %author%
+	Menu, tray, add, %version%, about
+	menu, tray, disable, %version%
 	Menu, tray, add,
-	Menu, tray, add, Exit PrintScreener, GuiClose			; GuiClose exit program
-	Menu, Tray, Icon, Exit PrintScreener, ico_shut.ico
-	Menu, tray, add, Refresh, doReload 				; Reload the script.
-	Menu, Tray, Icon, Refresh, ico_reboot.ico, 1
+	Menu, tray, add, --== Control ==--, about
+	Menu, Tray, Icon, --== Control ==--, ico_options.ico
+	Menu, tray, add, Exit %title%, Close					; Close exit program
+	Menu, Tray, Icon, Exit %title%, ico_shut.ico
+	Menu, tray, add, Refresh (ini mod), doReload 				; Reload the script.
+	Menu, Tray, Icon, Refresh (ini mod), ico_reboot.ico
+	Menu, tray, add, Set Debug (Toggle), debug
+	Menu, Tray, Icon, Set Debug (Toggle), ico_debug.ico
+	Menu, tray, add, Pause (Toggle), pause
+	Menu, Tray, Icon, Pause (Toggle), ico_pause.ico
 	Menu, tray, add,
-	Menu, tray, add, Hotkey: Printscreen, Printscreen 		; Show hotkey
-	Menu, Tray, Icon, Hotkey: Printscreen,  ico_HotKeys.ico, 1
-	Menu, tray, add,
-	Menu, tray, add, --= Options =--, about4
-	Menu, Tray, Icon, --= Options =--, ico_options.ico, 1
-	Menu, tray, add, Set take ACTIVE = %activescreen%, setactive 	; set active printscreen
+	Menu, tray, add, --== Options ==--, about
+	Menu, Tray, Icon, --== Options ==--, ico_options.ico
+	Menu, tray, add, Set take ACTIVE = %activescreen%, setactive 		; set active printscreen
 	Menu, Tray, Icon, Set take ACTIVE = %activescreen%, ico_fullscreen.ico, 1
-	Menu, tray, add, Set take SCREEN = %activewindows%, setscreen 	; set screen printscreen
+	Menu, tray, add, Set take SCREEN = %activewindows%, setscreen 		; set screen printscreen
 	Menu, Tray, Icon, Set take SCREEN = %activewindows%, ico_monitor.ico, 1
 	Menu, tray, add, Set all SCREEN = %allmonitors%, setallmonitors
 	Menu, tray, add,
-	Menu, tray, add, Sound On/Off = %sound%, soundonoff 		; Sound on off
-	Menu, Tray, Icon, Sound On/Off = %sound%, ico_Sound.ico, 1
+	Menu, tray, add, Sound On/Off = %sound%, soundonoff 			; Sound on off
+	Menu, Tray, Icon, Sound On/Off = %sound%, ico_Sound.ico
 	Menu, tray, add,
 	Menu, tray, add, Interval take On/Off = %loopback%, startstop
-	Menu, tray, add, Interval take = %interval% Sec., interval 	; Take at interval.
-	Menu, Tray, Icon, Interval take = %interval% Sec., ico_options.ico, 1
-	;Menu, tray, add, Interval stop, Stop	 			; stop interval.
+	Menu, tray, add, Interval take = %interval% Sec., interval 		; Take at interval.
+	Menu, Tray, Icon, Interval take = %interval% Sec., ico_options.ico
 	Menu, tray, add,
-	Menu, tray, add, About %author%, about1 			; Creates a new menu item.
-	Menu, Tray, Icon, About %author%, ico_about.ico, 1
-	Menu, tray, add, %Version%, Version 				; Show version
-	Menu, Tray, Icon, %Version%, ico_about.ico, 1
-	Menu, tray, add, Secret MsgBox, secret				; empty space
-	Menu, Tray, Icon, Secret MsgBox, ico_lock.ico, 1
-	Menu, tray, add,
-	Menu, tray, add, --= Software =--, about3
-	Menu, tray, add, Open Pictures Folder, Open 			; Open where files are saved
-	Menu, Tray, Icon, Open Pictures Folder, ico_folder.ico, 1
-	Menu, tray, add, Printscreen (PrtScr), Printscreen 		; Take a shot.
-	Menu, Tray, Icon, Printscreen (PrtScr), ico_camera.ico, 1
+	Menu, tray, add, Open Pictures Folder, Open 				; Open where files are saved
+	Menu, Tray, Icon, Open Pictures Folder, ico_folder.ico
+	Menu, tray, add, Printscreen Active (Need Click), Printscreen2 			; Take a shot.
+	Menu, Tray, Icon, Printscreen Active (Need Click), ico_camera.ico
+	Menu, tray, add, Printscreen (All screen), Printscreen1			; Take a shot.
+	Menu, Tray, Icon, Printscreen (All screen), ico_camera.ico
 	Menu, Tray, Tip, Print Screener
 
 ;;--- Software start here ---
 
 start:
+	Menu, Tray, Icon, ico_camera.ico
+	IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number%
 	KeyWait, PrintScreen , D
 
 	intervalstart:
 		Menu, Tray, Icon, ico_camtake.ico
 
 	count:
-		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
-		IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-		goto, count
+		SetEnv, number, 1
+		count1:
+		;; Actual user
+		IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, playsound
+		IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		;; Public user
+		;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
+		;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		goto, count1
 
 	playsound:
 		IfEqual, sound, 0, goto, soundskip
 		SoundPlay, snd_click.mp3
 
 	soundskip:
+		IfEqual, debug, 1, MsgBox, (soundskip) activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors%
 		IniRead, activescreen, PrintScreener.ini, options, activescreen
 		IniRead, activewindows, PrintScreener.ini, options, activewindows
 		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
@@ -118,19 +136,22 @@ start:
 		msgbox, Error (variable?) %activewindows% %activescreen% %allmonitors%: Must one variable to be 1 and another to be 0.
 
 	screen:
+		IfEqual, debug, 1, MsgBox, (screen)
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
 		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
 
 	active:
+		IfEqual, debug, 1, MsgBox, (active)
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 		goto, next
 
 
 	allmonitors:
+		IfEqual, debug, 1, MsgBox, (allmonitors)
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
 		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 		goto, next
 
 		;;  0 = whole screen
@@ -141,7 +162,7 @@ start:
 		;;  5 = object selected with the mouse
 		;;  6 = start in capture mode (can't be combined with other commandline options)
 		;;  $U(%d%m%Y_%H%M%S) - %Y%m%d%H%M%S
-		;; view i_options.txt for all options
+		;;  view i_options.txt for all options
 
 	next:
 		Sleep, 250
@@ -150,19 +171,36 @@ start:
 		IfEqual, loopback, 1, goto, intervalstart
 		Goto, start
 
-printtray:
+printtrayall:
+	;SetEnv, number, 1
 	Menu, Tray, Icon, ico_camtake.ico
 	count2:
-	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound2
-	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
+	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take2
+	;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 	goto, count2
-	playsound2:
-	IfEqual, sound, 0, goto, soundskip2
-	SoundPlay, snd_click.mp3
-	soundskip2:
-	sleep, 250
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
-	Menu, Tray, Icon, ico_camera.ico
+
+	take2:
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+	;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+	goto, start
+
+printtrayactive:
+	TrayTip, %title%, Click on a Windows with left mouse button !, 1, 2
+	KeyWait, LButton, D
+	;SetEnv, number, 1
+	Menu, Tray, Icon, ico_camtake.ico
+	count3:
+	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
+	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
+	;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	goto, take3
+
+	take3:
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+	;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	goto, start
 
 startstop:
@@ -214,24 +252,63 @@ interval:
 	IniWrite, %interval%, PrintScreener.ini, options, interval
 	goto, start
 
+;;--- Debug Pause ---
+
+debug:
+	IfEqual, debug, 0, goto, debug1
+	IfEqual, debug, 1, goto, debug0
+
+	debug0:
+	SetEnv, debug, 0
+	TrayTip, %title%, debug=%debug%, 1, 2
+	goto, start
+
+	debug1:
+	SetEnv, debug, 1
+	TrayTip, %title%, debug=%debug%, 1, 2
+	goto, start
+
+pause:
+	Ifequal, pause, 0, goto, paused
+	Ifequal, pause, 1, goto, unpaused
+
+	paused:
+	SetEnv, pause, 1
+	goto, sleep
+
+	unpaused:	
+	SetEnv, pause, 0
+	Goto, start
+
+	sleep:
+	Menu, Tray, Icon, ico_pause.ico
+	sleep, 24000
+	goto, sleep
+
+
 ;;--- Quit (escape , esc)
 
-GuiClose:
+Close:
 	ExitApp
+
+doReload:
+	Reload
+	sleep, 500
+	goto, Close
+
+;; Escape	; for debug purposes
+	Goto, Close
 
 ;;--- Tray Bar (must be at end of file) ---
 
 secret:
 	Menu, Tray, Icon, ico_camtake.ico
 	SoundPlay, snd_click.mp3
-	MsgBox, 0, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
+	MsgBox, 48, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, ico_camera.ico
 	Return
 
-about1:
-about2:
-about3:
-about4:
+about:
 	TrayTip, %title%, Just press PrintScreen by %Author%, 2, 2
 	Return
 
@@ -239,17 +316,22 @@ Version:
 	TrayTip, %title%, %version%, 2, 2
 	Return
 
-Printscreen:
-	goto, printtray
+author:
+	MsgBox, 64, %title%, %title% %mode% %version% %author% This software is usefull when windows goes off the sreen resolution and dissapear. New displacement (if 1) move to %var1% %var3% %var2% %var4% (if 0) move to %var1% %var3% (Automatic calculating according to your screen resolution.).`n`n`tGo to https://github.com/LostByteSoft
+	Return
+
+Printscreen1:
+	goto, printtrayall
+	Return
+
+Printscreen2:
+	goto, printtrayactive
 	Return
 
 open:
-	run, explorer.exe C:\Users\Public\Pictures\
+	run, explorer.exe C:\Users\%A_Username%\Pictures\
+	;run, explorer.exe C:\Users\Public\Pictures\
 	Return
-
-doReload:
-	Reload
-	Exitapp
 
 setactive:
 	IniWrite, 0, PrintScreener.ini, options, activewindows
@@ -280,6 +362,12 @@ setallmonitors:
 	SetEnv, allmonitors, 1
 	Reload
 	Exitapp
+
+GuiLogo:
+	Gui, Add, Picture, x25 y25 w400 h400 , ico_camera.ico
+	Gui, Show, w450 h450, %title% Logo
+	Gui, Color, 000000
+	return
 
 ;;--- End of script ---
 ;
@@ -314,4 +402,4 @@ setallmonitors:
 ;
 ;	If you are unhappy with this software i do not care.
 ;
-;;--- End of file ---     
+;;---                     
