@@ -8,6 +8,7 @@
 ;;	64 bit AHK version : 1.1.24.2 64 bit Unicode
 ;;	2017-04-07 - switch jpg to png format
 ;;	2017-05-31 - switch png to jpg format
+;;	2017-10-20-0837 - mouse hide before take photo - added function Lwin + c mouse disappear/appear
 
 ;;--- Softwares var options files ---
 
@@ -18,7 +19,7 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-10-18-1029
+	SetEnv, version, Version 2017-10-20-0817
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -100,10 +101,13 @@
 
 ;;--- Software start here ---
 
+	TrayTip, %title%, Mouse do not appear : Press Lwin + C !, 1, 2
+
 start:
 	Menu, Tray, Icon, ico_camera.ico
 	IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number%
 	KeyWait, PrintScreen , D
+	send, #c
 
 	intervalstart:
 		Menu, Tray, Icon, ico_camtake.ico
@@ -165,15 +169,17 @@ start:
 		;;  view i_options.txt for all options
 
 	next:
-		Sleep, 250
 		Menu, Tray, Icon, ico_camera.ico
 		IfEqual, loopback, 1, sleep, %interval%000
 		IfEqual, loopback, 1, goto, intervalstart
+		Sleep, 125		; needed mouse reappear to fast
+		send, #c
 		Goto, start
 
 printtrayall:
-	;SetEnv, number, 1
+	send, #c
 	Menu, Tray, Icon, ico_camtake.ico
+	IfEqual, debug, 1, sleep, 2000
 	count2:
 	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
 	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
@@ -182,15 +188,21 @@ printtrayall:
 	goto, count2
 
 	take2:
+	IfEqual, sound, 0, goto, soundskip2
+	SoundPlay, snd_click.mp3
+	soundskip2:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
 	;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+	Sleep, 125		; needed mouse reappear to fast
+	send, #c
 	goto, start
 
 printtrayactive:
 	TrayTip, %title%, Click on a Windows with left mouse button !, 1, 2
 	KeyWait, LButton, D
-	;SetEnv, number, 1
+	send, #c
 	Menu, Tray, Icon, ico_camtake.ico
+	IfEqual, debug, 1, sleep, 2000
 	count3:
 	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
 	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
@@ -199,8 +211,13 @@ printtrayactive:
 	goto, take3
 
 	take3:
+	IfEqual, sound, 0, goto, soundskip3
+	SoundPlay, snd_click.mp3
+	soundskip3:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+	Sleep, 125		; needed mouse reappear to fast
+	send, #c
 	goto, start
 
 startstop:
@@ -252,6 +269,44 @@ interval:
 	IniWrite, %interval%, PrintScreener.ini, options, interval
 	goto, start
 
+;;--- Founctions ---
+
+#c::SystemCursor("Toggle") 		 ; Win+C hotkey to toggle the cursor on and off.
+
+SystemCursor(OnOff=1)   ; INIT = "I","Init"; OFF = 0,"Off"; TOGGLE = -1,"T","Toggle"; ON = others
+{
+    static AndMask, XorMask, $, h_cursor
+        ,c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13 ; system cursors
+        , b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13   ; blank cursors
+        , h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11,h12,h13   ; handles of default cursors
+    if (OnOff = "Init" or OnOff = "I" or $ = "")       ; init when requested or at first call
+    {
+        $ = h                                          ; active default cursors
+        VarSetCapacity( h_cursor,4444, 1 )
+        VarSetCapacity( AndMask, 32*4, 0xFF )
+        VarSetCapacity( XorMask, 32*4, 0 )
+        system_cursors = 32512,32513,32514,32515,32516,32642,32643,32644,32645,32646,32648,32649,32650
+        StringSplit c, system_cursors, `,
+        Loop %c0%
+        {
+            h_cursor   := DllCall( "LoadCursor", "Ptr",0, "Ptr",c%A_Index% )
+            h%A_Index% := DllCall( "CopyImage", "Ptr",h_cursor, "UInt",2, "Int",0, "Int",0, "UInt",0 )
+            b%A_Index% := DllCall( "CreateCursor", "Ptr",0, "Int",0, "Int",0
+                , "Int",32, "Int",32, "Ptr",&AndMask, "Ptr",&XorMask )
+        }
+    }
+    if (OnOff = 0 or OnOff = "Off" or $ = "h" and (OnOff < 0 or OnOff = "Toggle" or OnOff = "T"))
+        $ = b  ; use blank cursors
+    else
+        $ = h  ; use the saved cursors
+
+    Loop %c0%
+    {
+        h_cursor := DllCall( "CopyImage", "Ptr",%$%%A_Index%, "UInt",2, "Int",0, "Int",0, "UInt",0 )
+        DllCall( "SetSystemCursor", "Ptr",h_cursor, "UInt",c%A_Index% )
+    }
+}
+
 ;;--- Debug Pause ---
 
 debug:
@@ -285,7 +340,6 @@ pause:
 	sleep, 24000
 	goto, sleep
 
-
 ;;--- Quit (escape , esc)
 
 Close:
@@ -296,7 +350,7 @@ doReload:
 	sleep, 500
 	goto, Close
 
-;; Escape	; for debug purposes
+;Escape::	; for debug purposes
 	Goto, Close
 
 ;;--- Tray Bar (must be at end of file) ---
