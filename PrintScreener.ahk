@@ -19,7 +19,7 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-10-20-0817
+	SetEnv, version, Version 2017-11-15-1510
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -116,11 +116,11 @@ start:
 		SetEnv, number, 1
 		count1:
 		;; Actual user
-		IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, playsound
-		IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, playsound
+		;;IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 		;; Public user
-		;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
-		;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
+		IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 		goto, count1
 
 	playsound:
@@ -141,21 +141,21 @@ start:
 
 	screen:
 		IfEqual, debug, 1, MsgBox, (screen)
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
-		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
 
 	active:
 		IfEqual, debug, 1, MsgBox, (active)
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
-		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 		goto, next
 
 
 	allmonitors:
 		IfEqual, debug, 1, MsgBox, (allmonitors)
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
-		;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 		goto, next
 
 		;;  0 = whole screen
@@ -181,18 +181,18 @@ printtrayall:
 	Menu, Tray, Icon, ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count2:
-	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
-	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take2
-	;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
+	;;IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take2
+	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 	goto, count2
 
 	take2:
 	IfEqual, sound, 0, goto, soundskip2
 	SoundPlay, snd_click.mp3
 	soundskip2:
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
-	;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 	Sleep, 125		; needed mouse reappear to fast
 	send, #c
 	goto, start
@@ -204,18 +204,18 @@ printtrayactive:
 	Menu, Tray, Icon, ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count3:
-	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
-	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
-	;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
+	;;IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
+	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 	goto, take3
 
 	take3:
 	IfEqual, sound, 0, goto, soundskip3
 	SoundPlay, snd_click.mp3
 	soundskip3:
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
-	;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	Sleep, 125		; needed mouse reappear to fast
 	send, #c
 	goto, start
@@ -315,13 +315,13 @@ debug:
 
 	debug0:
 	SetEnv, debug, 0
-	TrayTip, %title%, debug=%debug%, 1, 2
-	goto, start
+	TrayTip, %title%, Deactivated ! debug=%debug%, 1, 2
+	Goto, sleep2
 
 	debug1:
 	SetEnv, debug, 1
-	TrayTip, %title%, debug=%debug%, 1, 2
-	goto, start
+	TrayTip, %title%, Activated ! debug=%debug%, 1, 2
+	Goto, sleep2
 
 pause:
 	Ifequal, pause, 0, goto, paused
@@ -332,13 +332,15 @@ pause:
 	goto, sleep
 
 	unpaused:	
+	Menu, Tray, Icon, %logoicon%
 	SetEnv, pause, 0
 	Goto, start
 
 	sleep:
 	Menu, Tray, Icon, ico_pause.ico
-	sleep, 24000
-	goto, sleep
+	sleep2:
+	sleep, 500000
+	goto, sleep2
 
 ;;--- Quit (escape , esc)
 
@@ -383,8 +385,8 @@ Printscreen2:
 	Return
 
 open:
-	run, explorer.exe C:\Users\%A_Username%\Pictures\
-	;run, explorer.exe C:\Users\Public\Pictures\
+	;;run, explorer.exe C:\Users\%A_Username%\Pictures\
+	run, explorer.exe C:\Users\Public\Pictures\
 	Return
 
 setactive:
@@ -418,9 +420,14 @@ setallmonitors:
 	Exitapp
 
 GuiLogo:
-	Gui, Add, Picture, x25 y25 w400 h400 , ico_camera.ico
-	Gui, Show, w450 h450, %title% Logo
-	Gui, Color, 000000
+	Gui, 4Add, Picture, x25 y25 w400 h400 , ico_camera.ico
+	Gui, 4:Show, w450 h450, %title% Logo
+	Gui, 4:Color, 000000
+	Sleep, 500
+	Return
+
+4GuiClose:
+	Gui 4:Cancel
 	return
 
 ;;--- End of script ---
