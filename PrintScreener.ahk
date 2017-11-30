@@ -19,11 +19,12 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-11-15-1510
+	SetEnv, version, Version 2017-11-25-1641
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
 	SetEnv, number, 1
+	SetEnv, icofolder, C:\Program Files\Common Files
 	SetEnv, logoicon, ico_camera.ico
 	SetEnv, debug, 0
 
@@ -33,70 +34,76 @@
 	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 	IniRead, interval, PrintScreener.ini, options, interval
 
+	;; specific files
+
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
-	FileInstall, ico_camtake.ico, ico_camtake.ico, 0
-	FileInstall, ico_camera.ico, ico_camera.ico, 0
-	FileInstall, ico_about.ico, ico_about.ico, 0
-	FileInstall, ico_folder.ico, ico_folder.ico, 0
-	FileInstall, ico_Sound.ico, ico_Sound.ico, 0
-	FileInstall, ico_lock.ico, ico_lock.ico, 0
-	FileInstall, ico_shut.ico, ico_shut.ico, 0
-	FileInstall, ico_reboot.ico, ico_reboot.ico, 0
-	FileInstall, ico_monitor.ico, ico_monitor.ico, 0
-	FileInstall, ico_fullscreen.ico, ico_fullscreen.ico, 0
-	FileInstall, ico_HotKeys.ico, ico_HotKeys.ico, 0
-	FileInstall, ico_options.ico, ico_options.ico, 0
-	FileInstall, ico_debug.ico, ico_debug.ico, 0
-	FileInstall, ico_pause.ico, ico_pause.ico, 0
+	FileInstall, ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
+	FileInstall, ico_camera.ico, %icofolder%\ico_camera.ico, 0
+	FileInstall, ico_folder.ico, %icofolder%\ico_folder.ico, 0
+	FileInstall, ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
+	FileInstall, ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
+	FileInstall, ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
+
+	;; Common ico
+
+	FileInstall, ico_about.ico, %icofolder%\ico_about.ico, 0
+	FileInstall, ico_lock.ico, %icofolder%\ico_lock.ico, 0
+	FileInstall, ico_shut.ico, %icofolder%\ico_shut.ico, 0
+	FileInstall, ico_options.ico, %icofolder%\ico_options.ico, 0
+	FileInstall, ico_reboot.ico, %icofolder%\ico_reboot.ico, 0
+	FileInstall, ico_shut.ico, %icofolder%\ico_shut.ico, 0
+	FileInstall, ico_debug.ico, %icofolder%\ico_debug.ico, 0
+	FileInstall, ico_HotKeys.ico, %icofolder%\ico_HotKeys.ico, 0
+	FileInstall, ico_pause.ico, %icofolder%\ico_pause.ico, 0
 
 ;;--- Menu Tray options ---
 
 	Menu, Tray, NoStandard
 	Menu, tray, add, ---=== %title% ===---, about
-	Menu, Tray, Icon, ---=== %title% ===---, %logoicon%
+	Menu, Tray, Icon, ---=== %title% ===---, %icofolder%\%logoicon%
 	Menu, tray, add, Show logo, GuiLogo
 	Menu, tray, add, Secret MsgBox, secret					; Secret MsgBox, just show all options and variables of the program
-	Menu, Tray, Icon, Secret MsgBox, ico_lock.ico
+	Menu, Tray, Icon, Secret MsgBox, %icofolder%\ico_lock.ico
 	Menu, tray, add, About && ReadMe, author
-	Menu, Tray, Icon, About && ReadMe, ico_about.ico
+	Menu, Tray, Icon, About && ReadMe, %icofolder%\ico_about.ico
 	Menu, tray, add, Author %author%, about
 	menu, tray, disable, Author %author%
 	Menu, tray, add, %version%, about
 	menu, tray, disable, %version%
 	Menu, tray, add,
 	Menu, tray, add, --== Control ==--, about
-	Menu, Tray, Icon, --== Control ==--, ico_options.ico
+	Menu, Tray, Icon, --== Control ==--, %icofolder%\ico_options.ico
 	Menu, tray, add, Exit %title%, Close					; Close exit program
-	Menu, Tray, Icon, Exit %title%, ico_shut.ico
+	Menu, Tray, Icon, Exit %title%, %icofolder%\ico_shut.ico
 	Menu, tray, add, Refresh (ini mod), doReload 				; Reload the script.
-	Menu, Tray, Icon, Refresh (ini mod), ico_reboot.ico
+	Menu, Tray, Icon, Refresh (ini mod), %icofolder%\ico_reboot.ico
 	Menu, tray, add, Set Debug (Toggle), debug
-	Menu, Tray, Icon, Set Debug (Toggle), ico_debug.ico
+	Menu, Tray, Icon, Set Debug (Toggle), %icofolder%\ico_debug.ico
 	Menu, tray, add, Pause (Toggle), pause
-	Menu, Tray, Icon, Pause (Toggle), ico_pause.ico
+	Menu, Tray, Icon, Pause (Toggle), %icofolder%\ico_pause.ico
 	Menu, tray, add,
 	Menu, tray, add, --== Options ==--, about
-	Menu, Tray, Icon, --== Options ==--, ico_options.ico
+	Menu, Tray, Icon, --== Options ==--, %icofolder%\ico_options.ico
 	Menu, tray, add, Set take ACTIVE = %activescreen%, setactive 		; set active printscreen
-	Menu, Tray, Icon, Set take ACTIVE = %activescreen%, ico_fullscreen.ico, 1
+	Menu, Tray, Icon, Set take ACTIVE = %activescreen%, %icofolder%\ico_fullscreen.ico, 1
 	Menu, tray, add, Set take SCREEN = %activewindows%, setscreen 		; set screen printscreen
-	Menu, Tray, Icon, Set take SCREEN = %activewindows%, ico_monitor.ico, 1
+	Menu, Tray, Icon, Set take SCREEN = %activewindows%, %icofolder%\ico_monitor.ico, 1
 	Menu, tray, add, Set all SCREEN = %allmonitors%, setallmonitors
 	Menu, tray, add,
 	Menu, tray, add, Sound On/Off = %sound%, soundonoff 			; Sound on off
-	Menu, Tray, Icon, Sound On/Off = %sound%, ico_Sound.ico
+	Menu, Tray, Icon, Sound On/Off = %sound%, %icofolder%\ico_Sound.ico
 	Menu, tray, add,
 	Menu, tray, add, Interval take On/Off = %loopback%, startstop
 	Menu, tray, add, Interval take = %interval% Sec., interval 		; Take at interval.
-	Menu, Tray, Icon, Interval take = %interval% Sec., ico_options.ico
+	Menu, Tray, Icon, Interval take = %interval% Sec., %icofolder%\ico_options.ico
 	Menu, tray, add,
 	Menu, tray, add, Open Pictures Folder, Open 				; Open where files are saved
-	Menu, Tray, Icon, Open Pictures Folder, ico_folder.ico
+	Menu, Tray, Icon, Open Pictures Folder, %icofolder%\ico_folder.ico
 	Menu, tray, add, Printscreen Active (Need Click), Printscreen2 			; Take a shot.
-	Menu, Tray, Icon, Printscreen Active (Need Click), ico_camera.ico
+	Menu, Tray, Icon, Printscreen Active (Need Click), %icofolder%\ico_camera.ico
 	Menu, tray, add, Printscreen (All screen), Printscreen1			; Take a shot.
-	Menu, Tray, Icon, Printscreen (All screen), ico_camera.ico
+	Menu, Tray, Icon, Printscreen (All screen), %icofolder%\ico_camera.ico
 	Menu, Tray, Tip, Print Screener
 
 ;;--- Software start here ---
@@ -104,13 +111,13 @@
 	TrayTip, %title%, Mouse do not appear : Press Lwin + C !, 1, 2
 
 start:
-	Menu, Tray, Icon, ico_camera.ico
+	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number%
 	KeyWait, PrintScreen , D
 	send, #c
 
 	intervalstart:
-		Menu, Tray, Icon, ico_camtake.ico
+		Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 
 	count:
 		SetEnv, number, 1
@@ -169,7 +176,7 @@ start:
 		;;  view i_options.txt for all options
 
 	next:
-		Menu, Tray, Icon, ico_camera.ico
+		Menu, Tray, Icon, %icofolder%\ico_camera.ico
 		IfEqual, loopback, 1, sleep, %interval%000
 		IfEqual, loopback, 1, goto, intervalstart
 		Sleep, 125		; needed mouse reappear to fast
@@ -178,7 +185,7 @@ start:
 
 printtrayall:
 	send, #c
-	Menu, Tray, Icon, ico_camtake.ico
+	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count2:
 	;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
@@ -201,7 +208,7 @@ printtrayactive:
 	TrayTip, %title%, Click on a Windows with left mouse button !, 1, 2
 	KeyWait, LButton, D
 	send, #c
-	Menu, Tray, Icon, ico_camtake.ico
+	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count3:
 	;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
@@ -337,7 +344,7 @@ pause:
 	Goto, start
 
 	sleep:
-	Menu, Tray, Icon, ico_pause.ico
+	Menu, Tray, Icon, %icofolder%\ico_pause.ico
 	sleep2:
 	sleep, 500000
 	goto, sleep2
@@ -358,10 +365,10 @@ doReload:
 ;;--- Tray Bar (must be at end of file) ---
 
 secret:
-	Menu, Tray, Icon, ico_camtake.ico
+	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	SoundPlay, snd_click.mp3
 	MsgBox, 48, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
-	Menu, Tray, Icon, ico_camera.ico
+	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	Return
 
 about:
@@ -420,13 +427,13 @@ setallmonitors:
 	Exitapp
 
 GuiLogo:
-	Gui, 4Add, Picture, x25 y25 w400 h400 , ico_camera.ico
+	Gui, 4:Add, Picture, x25 y25 w400 h400, %icofolder%\%logoicon%
 	Gui, 4:Show, w450 h450, %title% Logo
-	Gui, 4:Color, 000000
+	;;Gui, 4:Color, 000000
 	Sleep, 500
 	Return
 
-4GuiClose:
+	4GuiClose:
 	Gui 4:Cancel
 	return
 
