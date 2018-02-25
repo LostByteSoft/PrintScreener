@@ -19,7 +19,7 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2017-11-25-1641
+	SetEnv, version, Version 2018-02-24-1919
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -123,11 +123,11 @@ start:
 		SetEnv, number, 1
 		count1:
 		;; Actual user
-		;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, playsound
-		;;IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, playsound
+		IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 		;; Public user
-		IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
-		IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+		;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
+		;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 		goto, count1
 
 	playsound:
@@ -148,21 +148,21 @@ start:
 
 	screen:
 		IfEqual, debug, 1, MsgBox, (screen)
-		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
+		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
 
 	active:
 		IfEqual, debug, 1, MsgBox, (active)
-		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 		goto, next
 
 
 	allmonitors:
 		IfEqual, debug, 1, MsgBox, (allmonitors)
-		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 		goto, next
 
 		;;  0 = whole screen
@@ -188,18 +188,18 @@ printtrayall:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count2:
-	;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
-	;;IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take2
-	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
+	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take2
+	;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 	goto, count2
 
 	take2:
 	IfEqual, sound, 0, goto, soundskip2
 	SoundPlay, snd_click.mp3
 	soundskip2:
-	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 	Sleep, 125		; needed mouse reappear to fast
 	send, #c
 	goto, start
@@ -211,18 +211,18 @@ printtrayactive:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count3:
-	;;IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
-	;;IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
-	IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
+	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
+	;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
 	goto, take3
 
 	take3:
 	IfEqual, sound, 0, goto, soundskip3
 	SoundPlay, snd_click.mp3
 	soundskip3:
-	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	Sleep, 125		; needed mouse reappear to fast
 	send, #c
 	goto, start
@@ -367,7 +367,7 @@ doReload:
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	SoundPlay, snd_click.mp3
-	MsgBox, 48, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
+	MsgBox, 48, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nPhoto=C:\Users\%A_Username%\Pictures\ AND C:\PrintScreener (mklink)`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	Return
 
@@ -380,7 +380,7 @@ Version:
 	Return
 
 author:
-	MsgBox, 64, %title%, %title% %mode% %version% %author% This software is usefull when windows goes off the sreen resolution and dissapear. New displacement (if 1) move to %var1% %var3% %var2% %var4% (if 0) move to %var1% %var3% (Automatic calculating according to your screen resolution.).`n`n`tGo to https://github.com/LostByteSoft
+	MsgBox, 64, %title%, %title% %mode% %version% %author% This software is usefull to take pictures of the screen.`n`n`tGo to https://github.com/LostByteSoft
 	Return
 
 Printscreen1:
@@ -392,8 +392,8 @@ Printscreen2:
 	Return
 
 open:
-	;;run, explorer.exe C:\Users\%A_Username%\Pictures\
-	run, explorer.exe C:\Users\Public\Pictures\
+	run, explorer.exe C:\Users\%A_Username%\Pictures\
+	;;run, explorer.exe C:\Users\Public\Pictures\
 	Return
 
 setactive:
