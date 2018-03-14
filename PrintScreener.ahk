@@ -3,12 +3,13 @@
 ;;	ScreenShooter, Just press PrintScreen
 ;;	NEED "iview442_x64_setup.exe" you could found it here "http://www.irfanview.com/64bit.htm"
 ;;	Just take a snapshot of the screen AHK
-;;	Compatibility: Windows
+;;	Compatibility: Windows 7 x64
 ;;	All files must be in same folder. Where you want.
 ;;	64 bit AHK version : 1.1.24.2 64 bit Unicode
 ;;	2017-04-07 - switch jpg to png format
 ;;	2017-05-31 - switch png to jpg format
 ;;	2017-10-20-0837 - mouse hide before take photo - added function Lwin + c mouse disappear/appear
+;;	2018-03-13-2021 - some updates
 
 ;;--- Softwares var options files ---
 
@@ -19,7 +20,7 @@
 
 	SetEnv, title, ScreenShooter
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2018-02-24-1919
+	SetEnv, version, Version 2018-03-13-2021
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -63,7 +64,7 @@
 	Menu, tray, add, ---=== %title% ===---, about
 	Menu, Tray, Icon, ---=== %title% ===---, %icofolder%\%logoicon%
 	Menu, tray, add, Show logo, GuiLogo
-	Menu, tray, add, Secret MsgBox, secret					; Secret MsgBox, just show all options and variables of the program
+	Menu, tray, add, Secret MsgBox, secret					; Secret MsgBox, just show all options and variables of the program.
 	Menu, Tray, Icon, Secret MsgBox, %icofolder%\ico_lock.ico
 	Menu, tray, add, About && ReadMe, author
 	Menu, Tray, Icon, About && ReadMe, %icofolder%\ico_about.ico
@@ -71,6 +72,10 @@
 	menu, tray, disable, Author %author%
 	Menu, tray, add, %version%, about
 	menu, tray, disable, %version%
+	;;menu, tray, add, Show Gui, start					; Default gui
+	;;Menu, Tray, Icon, Show Gui, %icofolder%\%logoicon%
+	;;Menu, Tray, Default, Show Gui
+	;;Menu, Tray, Click, 1
 	Menu, tray, add,
 	Menu, tray, add, --== Control ==--, about
 	Menu, Tray, Icon, --== Control ==--, %icofolder%\ico_options.ico
@@ -100,10 +105,16 @@
 	Menu, tray, add,
 	Menu, tray, add, Open Pictures Folder, Open 				; Open where files are saved
 	Menu, Tray, Icon, Open Pictures Folder, %icofolder%\ico_folder.ico
+	Menu, tray, add,
 	Menu, tray, add, Printscreen Active (Need Click), Printscreen2 			; Take a shot.
 	Menu, Tray, Icon, Printscreen Active (Need Click), %icofolder%\ico_camera.ico
 	Menu, tray, add, Printscreen (All screen), Printscreen1			; Take a shot.
 	Menu, Tray, Icon, Printscreen (All screen), %icofolder%\ico_camera.ico
+	Menu, tray, add, Printscreen (Screen 1), Printscreen1			; Take a shot.
+	Menu, Tray, Icon, Printscreen (Screen 1), %icofolder%\ico_camera.ico
+	Menu, Tray, Default, Printscreen (Screen 1)
+	menu, tray, add,
+	Menu, Tray, Click, 1
 	Menu, Tray, Tip, Print Screener
 
 ;;--- Software start here ---
@@ -183,6 +194,8 @@ start:
 		send, #c
 		Goto, start
 
+;;--- Click on tray ---
+
 printtrayall:
 	send, #c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
@@ -226,6 +239,31 @@ printtrayactive:
 	Sleep, 125		; needed mouse reappear to fast
 	send, #c
 	goto, start
+
+printtrayscreen:
+	TrayTip, %title%, Click on a Windows with left mouse button !, 1, 2
+	KeyWait, LButton, D
+	send, #c
+	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
+	IfEqual, debug, 1, sleep, 2000
+	count4:
+	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take4
+	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
+	;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
+	goto, take4
+
+	take4:
+	IfEqual, sound, 0, goto, soundskip4
+	SoundPlay, snd_click.mp3
+	soundskip4:
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+	Sleep, 125		; needed mouse reappear to fast
+	send, #c
+	goto, start
+
+;;--- Options ---
 
 startstop:
 	IfEqual, loopback, 1, goto, stop
@@ -278,7 +316,7 @@ interval:
 
 ;;--- Founctions ---
 
-#c::SystemCursor("Toggle") 		 ; Win+C hotkey to toggle the cursor on and off.
+#c::SystemCursor("Toggle")				; Win+C hotkey to toggle the cursor on and off.
 
 SystemCursor(OnOff=1)   ; INIT = "I","Init"; OFF = 0,"Off"; TOGGLE = -1,"T","Toggle"; ON = others
 {
@@ -359,7 +397,7 @@ doReload:
 	sleep, 500
 	goto, Close
 
-;Escape::	; for debug purposes
+;Escape::		; for debug purposes
 	Goto, Close
 
 ;;--- Tray Bar (must be at end of file) ---
@@ -367,7 +405,7 @@ doReload:
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	SoundPlay, snd_click.mp3
-	MsgBox, 48, Printscreen SECRET MsbBox, title=%title% mode=%mode% version=%version% author=%author%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nPhoto=C:\Users\%A_Username%\Pictures\ AND C:\PrintScreener (mklink)`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
+	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nPhoto=C:\Users\%A_Username%\Pictures\ AND C:\PrintScreener (mklink)`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	Return
 
@@ -389,6 +427,10 @@ Printscreen1:
 
 Printscreen2:
 	goto, printtrayactive
+	Return
+
+Printscreen3:
+	goto, printtrayscreen
 	Return
 
 open:
@@ -429,7 +471,8 @@ setallmonitors:
 GuiLogo:
 	Gui, 4:Add, Picture, x25 y25 w400 h400, %icofolder%\%logoicon%
 	Gui, 4:Show, w450 h450, %title% Logo
-	;;Gui, 4:Color, 000000
+	Gui, 4:Color, 000000
+	Gui, 4:-MinimizeBox
 	Sleep, 500
 	Return
 
