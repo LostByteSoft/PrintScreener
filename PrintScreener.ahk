@@ -403,11 +403,6 @@ doReload:
 
 ;;--- Tray Bar (must be at end of file) ---
 
-A_WorkingDir:
-	msgbox, run, explorer.exe "%A_WorkingDir%"
-	run, explorer.exe "%A_WorkingDir%"
-	Return	
-
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	SoundPlay, snd_click.mp3
@@ -485,6 +480,11 @@ GuiLogo:
 	4GuiClose:
 	Gui 4:Cancel
 	return
+
+A_WorkingDir:
+	IfEqual, debug, 1, msgbox, run, explorer.exe "%A_WorkingDir%"
+	run, explorer.exe "%A_WorkingDir%"
+	Return
 
 ;;--- End of script ---
 ;
