@@ -76,6 +76,7 @@
 	;;Menu, Tray, Icon, Show Gui, %icofolder%\%logoicon%
 	;;Menu, Tray, Default, Show Gui
 	;;Menu, Tray, Click, 1
+	Menu, tray, add, Open A_WorkingDir, A_WorkingDir
 	Menu, tray, add,
 	Menu, tray, add, --== Control ==--, about
 	Menu, Tray, Icon, --== Control ==--, %icofolder%\ico_options.ico
@@ -401,6 +402,11 @@ doReload:
 	Goto, Close
 
 ;;--- Tray Bar (must be at end of file) ---
+
+A_WorkingDir:
+	msgbox, run, explorer.exe "%A_WorkingDir%"
+	run, explorer.exe "%A_WorkingDir%"
+	Return	
 
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
