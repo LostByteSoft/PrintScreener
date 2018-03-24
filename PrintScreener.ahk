@@ -10,6 +10,7 @@
 ;;	2017-05-31 - switch png to jpg format
 ;;	2017-10-20-0837 - mouse hide before take photo - added function Lwin + c mouse disappear/appear
 ;;	2018-03-13-2021 - some updates
+;;	2018-03-24-1834 - another some updates
 
 ;;--- Softwares var options files ---
 
@@ -18,9 +19,9 @@
 	#Persistent
 	#NoEnv
 
-	SetEnv, title, ScreenShooter
+	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2018-03-13-2021
+	SetEnv, version, Version 2018-03-24-1834
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -36,7 +37,6 @@
 	IniRead, interval, PrintScreener.ini, options, interval
 
 	;; specific files
-
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
 	FileInstall, ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
@@ -47,7 +47,6 @@
 	FileInstall, ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
 
 	;; Common ico
-
 	FileInstall, ico_about.ico, %icofolder%\ico_about.ico, 0
 	FileInstall, ico_lock.ico, %icofolder%\ico_lock.ico, 0
 	FileInstall, ico_shut.ico, %icofolder%\ico_shut.ico, 0
@@ -57,6 +56,7 @@
 	FileInstall, ico_debug.ico, %icofolder%\ico_debug.ico, 0
 	FileInstall, ico_HotKeys.ico, %icofolder%\ico_HotKeys.ico, 0
 	FileInstall, ico_pause.ico, %icofolder%\ico_pause.ico, 0
+	FileInstall, ico_folder.ico, %icofolder%\ico_folder.ico, 0
 
 ;;--- Menu Tray options ---
 
@@ -66,27 +66,31 @@
 	Menu, tray, add, Show logo, GuiLogo
 	Menu, tray, add, Secret MsgBox, secret					; Secret MsgBox, just show all options and variables of the program.
 	Menu, Tray, Icon, Secret MsgBox, %icofolder%\ico_lock.ico
-	Menu, tray, add, About && ReadMe, author
+	Menu, tray, add, About && ReadMe, author				; infos about author
 	Menu, Tray, Icon, About && ReadMe, %icofolder%\ico_about.ico
-	Menu, tray, add, Author %author%, about
+	Menu, tray, add, Author %author%, about					; author msg box
 	menu, tray, disable, Author %author%
-	Menu, tray, add, %version%, about
+	Menu, tray, add, %version%, about					; version of the software
 	menu, tray, disable, %version%
-	;;menu, tray, add, Show Gui, start					; Default gui
-	;;Menu, Tray, Icon, Show Gui, %icofolder%\%logoicon%
-	;;Menu, Tray, Default, Show Gui
-	;;Menu, Tray, Click, 1
-	Menu, tray, add, Open A_WorkingDir, A_WorkingDir
+	Menu, tray, add, Open project web page, webpage				; open web page project
+	Menu, Tray, Icon, Open project web page, %icofolder%\ico_HotKeys.ico
 	Menu, tray, add,
 	Menu, tray, add, --== Control ==--, about
 	Menu, Tray, Icon, --== Control ==--, %icofolder%\ico_options.ico
-	Menu, tray, add, Exit %title%, Close					; Close exit program
-	Menu, Tray, Icon, Exit %title%, %icofolder%\ico_shut.ico
-	Menu, tray, add, Refresh (ini mod), doReload 				; Reload the script.
-	Menu, Tray, Icon, Refresh (ini mod), %icofolder%\ico_reboot.ico
-	Menu, tray, add, Set Debug (Toggle), debug
+	;menu, tray, add, Show Gui (Same as click), start			; Default gui open
+	;Menu, Tray, Icon, Show Gui (Same as click), %icofolder%\ico_loupe.ico
+	;Menu, Tray, Default, Show Gui (Same as click)
+	;Menu, Tray, Click, 1
+	Menu, tray, add, Set Debug (Toggle), debug				; debug msg
 	Menu, Tray, Icon, Set Debug (Toggle), %icofolder%\ico_debug.ico
-	Menu, tray, add, Pause (Toggle), pause
+	Menu, tray, add, Open A_WorkingDir, A_WorkingDir			; open where the exe is
+	Menu, Tray, Icon, Open A_WorkingDir, %icofolder%\ico_folder.ico
+	Menu, tray, add,
+	Menu, tray, add, Exit %title%, ExitApp					; Close exit program
+	Menu, Tray, Icon, Exit %title%, %icofolder%\ico_shut.ico
+	Menu, tray, add, Refresh (Ini mod), doReload 				; Reload the script.
+	Menu, Tray, Icon, Refresh (Ini mod), %icofolder%\ico_reboot.ico
+	Menu, tray, add, Pause (Toggle), pause					; pause the script
 	Menu, Tray, Icon, Pause (Toggle), %icofolder%\ico_pause.ico
 	Menu, tray, add,
 	Menu, tray, add, --== Options ==--, about
@@ -191,7 +195,7 @@ start:
 		Menu, Tray, Icon, %icofolder%\ico_camera.ico
 		IfEqual, loopback, 1, sleep, %interval%000
 		IfEqual, loopback, 1, goto, intervalstart
-		Sleep, 125		; needed mouse reappear to fast
+		Sleep, 250		; needed mouse reappear to fast (125 ms min)
 		send, #c
 		Goto, start
 
@@ -214,7 +218,7 @@ printtrayall:
 	soundskip2:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
-	Sleep, 125		; needed mouse reappear to fast
+	Sleep, 250		; needed mouse reappear to fast (125 ms min)
 	send, #c
 	goto, start
 
@@ -237,7 +241,7 @@ printtrayactive:
 	soundskip3:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
-	Sleep, 125		; needed mouse reappear to fast
+	Sleep, 250		; needed mouse reappear to fast (125 ms min)
 	send, #c
 	goto, start
 
@@ -260,7 +264,7 @@ printtrayscreen:
 	soundskip4:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
-	Sleep, 125		; needed mouse reappear to fast
+	Sleep, 250		; needed mouse reappear to fast (125 ms min)
 	send, #c
 	goto, start
 
@@ -353,7 +357,7 @@ SystemCursor(OnOff=1)   ; INIT = "I","Init"; OFF = 0,"Off"; TOGGLE = -1,"T","Tog
     }
 }
 
-;;--- Debug Pause ---
+;;--- Debug ---
 
 debug:
 	IfEqual, debug, 0, goto, debug1
@@ -368,6 +372,8 @@ debug:
 	SetEnv, debug, 1
 	TrayTip, %title%, Activated ! debug=%debug%, 1, 2
 	Goto, sleep2
+
+;;--- Pause ---
 
 pause:
 	Ifequal, pause, 0, goto, paused
@@ -388,18 +394,29 @@ pause:
 	sleep, 500000
 	goto, sleep2
 
-;;--- Quit (escape , esc)
+;;--- Quit ---
 
-Close:
+;; Escape::
 	ExitApp
 
+ButtonQuit:
+	Gui, destroy
+	goto, sleep2
+
+ButtonReload:
 doReload:
+	Gui, destroy
 	Reload
 	sleep, 500
-	goto, Close
 
-;Escape::		; for debug purposes
-	Goto, Close
+ButtonExit:
+ExitApp:
+	Gui, destroy
+	ExitApp
+
+GuiClose:
+	Gui, destroy
+	Goto, sleep2
 
 ;;--- Tray Bar (must be at end of file) ---
 
@@ -484,6 +501,10 @@ GuiLogo:
 A_WorkingDir:
 	IfEqual, debug, 1, msgbox, run, explorer.exe "%A_WorkingDir%"
 	run, explorer.exe "%A_WorkingDir%"
+	Return
+
+webpage:
+	run, https://github.com/LostByteSoft/%title%
 	Return
 
 ;;--- End of script ---
