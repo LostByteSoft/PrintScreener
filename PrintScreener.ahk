@@ -11,6 +11,7 @@
 ;;	2017-10-20-0837 - mouse hide before take photo - added function Lwin + c mouse disappear/appear
 ;;	2018-03-13-2021 - some updates
 ;;	2018-03-24-1834 - another some updates
+;;	2018-05-11-2233 bug tracking
 
 ;;--- Softwares var options files ---
 
@@ -21,7 +22,7 @@
 
 	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2018-03-24-1834
+	SetEnv, version, Version 2018-05-11-2233
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -30,33 +31,36 @@
 	SetEnv, logoicon, ico_camera.ico
 	SetEnv, debug, 0
 
-	IniRead, sound, PrintScreener.ini, options, sound
-	IniRead, activescreen, PrintScreener.ini, options, activescreen
-	IniRead, activewindows, PrintScreener.ini, options, activewindows
-	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
-	IniRead, interval, PrintScreener.ini, options, interval
+	SetEnv, activescreen, 0
+	SetEnv, activewindows, 0
+	SetEnv, allmonitors, 0
 
 	;; specific files
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
 	FileInstall, ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
 	FileInstall, ico_camera.ico, %icofolder%\ico_camera.ico, 0
-	FileInstall, ico_folder.ico, %icofolder%\ico_folder.ico, 0
 	FileInstall, ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
 	FileInstall, ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
 	FileInstall, ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
 
 	;; Common ico
-	FileInstall, ico_about.ico, %icofolder%\ico_about.ico, 0
-	FileInstall, ico_lock.ico, %icofolder%\ico_lock.ico, 0
-	FileInstall, ico_shut.ico, %icofolder%\ico_shut.ico, 0
-	FileInstall, ico_options.ico, %icofolder%\ico_options.ico, 0
-	FileInstall, ico_reboot.ico, %icofolder%\ico_reboot.ico, 0
-	FileInstall, ico_shut.ico, %icofolder%\ico_shut.ico, 0
-	FileInstall, ico_debug.ico, %icofolder%\ico_debug.ico, 0
-	FileInstall, ico_HotKeys.ico, %icofolder%\ico_HotKeys.ico, 0
-	FileInstall, ico_pause.ico, %icofolder%\ico_pause.ico, 0
-	FileInstall, ico_folder.ico, %icofolder%\ico_folder.ico, 0
+	FileInstall, SharedIcons\ico_about.ico, %icofolder%\ico_about.ico, 0
+	FileInstall, SharedIcons\ico_lock.ico, %icofolder%\ico_lock.ico, 0
+	FileInstall, SharedIcons\ico_options.ico, %icofolder%\ico_options.ico, 0
+	FileInstall, SharedIcons\ico_reboot.ico, %icofolder%\ico_reboot.ico, 0
+	FileInstall, SharedIcons\ico_shut.ico, %icofolder%\ico_shut.ico, 0
+	FileInstall, SharedIcons\ico_debug.ico, %icofolder%\ico_debug.ico, 0
+	FileInstall, SharedIcons\ico_HotKeys.ico, %icofolder%\ico_HotKeys.ico, 0
+	FileInstall, SharedIcons\ico_pause.ico, %icofolder%\ico_pause.ico, 0
+	FileInstall, SharedIcons\ico_loupe.ico, %icofolder%\ico_loupe.ico, 0
+	FileInstall, SharedIcons\ico_folder.ico, %icofolder%\ico_folder.ico, 0
+
+	IniRead, sound, PrintScreener.ini, options, sound
+	IniRead, activescreen, PrintScreener.ini, options, activescreen
+	IniRead, activewindows, PrintScreener.ini, options, activewindows
+	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
+	IniRead, interval, PrintScreener.ini, options, interval
 
 ;;--- Menu Tray options ---
 
@@ -113,13 +117,13 @@
 	Menu, tray, add,
 	Menu, tray, add, Printscreen Active (Need Click), Printscreen2 			; Take a shot.
 	Menu, Tray, Icon, Printscreen Active (Need Click), %icofolder%\ico_camera.ico
+	Menu, Tray, Default, Printscreen Active (Need Click)
+	Menu, Tray, Click, 1
 	Menu, tray, add, Printscreen (All screen), Printscreen1			; Take a shot.
 	Menu, Tray, Icon, Printscreen (All screen), %icofolder%\ico_camera.ico
 	Menu, tray, add, Printscreen (Screen 1), Printscreen1			; Take a shot.
 	Menu, Tray, Icon, Printscreen (Screen 1), %icofolder%\ico_camera.ico
-	Menu, Tray, Default, Printscreen (Screen 1)
 	menu, tray, add,
-	Menu, Tray, Click, 1
 	Menu, Tray, Tip, Print Screener
 
 ;;--- Software start here ---
@@ -127,9 +131,17 @@
 	TrayTip, %title%, Mouse do not appear : Press Lwin + C !, 1, 2
 
 start:
-	Menu, Tray, Icon, %icofolder%\ico_camera.ico
-	IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number%
+		Menu, Tray, Icon, %icofolder%\ico_camera.ico
+
+		IniRead, sound, PrintScreener.ini, options, sound
+		IniRead, activescreen, PrintScreener.ini, options, activescreen
+		IniRead, activewindows, PrintScreener.ini, options, activewindows
+		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
+		IniRead, interval, PrintScreener.ini, options, interval
+		IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number%
+
 	KeyWait, PrintScreen , D
+
 	send, #c
 
 	intervalstart:
@@ -152,15 +164,13 @@ start:
 
 	soundskip:
 		IfEqual, debug, 1, MsgBox, (soundskip) activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors%
-		IniRead, activescreen, PrintScreener.ini, options, activescreen
-		IniRead, activewindows, PrintScreener.ini, options, activewindows
-		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
+
 
 		IfEqual, activescreen, 1, goto, screen
 		IfEqual, activewindows, 1, goto, active
 		IfEqual, allmonitors, 1, goto, allmonitors
 
-		msgbox, Error (variable?) %activewindows% %activescreen% %allmonitors%: Must one variable to be 1 and another to be 0.
+		msgbox, Error (variable?) activewindows=%activewindows% activescreen=%activescreen% allmonitors=%allmonitors%: Must one variable to be 1 and another to be 0.
 
 	screen:
 		IfEqual, debug, 1, MsgBox, (screen)
@@ -366,12 +376,12 @@ debug:
 	debug0:
 	SetEnv, debug, 0
 	TrayTip, %title%, Deactivated ! debug=%debug%, 1, 2
-	Goto, sleep2
+	Goto, start
 
 	debug1:
 	SetEnv, debug, 1
 	TrayTip, %title%, Activated ! debug=%debug%, 1, 2
-	Goto, sleep2
+	Goto, start
 
 ;;--- Pause ---
 
