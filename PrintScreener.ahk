@@ -12,6 +12,7 @@
 ;;	2018-03-13-2021 - some updates
 ;;	2018-03-24-1834 - another some updates
 ;;	2018-05-11-2233 bug tracking
+;;	2020-06-02 some updates to keep working properly and install batch
 
 ;;--- Softwares var options files ---
 
@@ -22,7 +23,7 @@
 
 	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2018-05-11-2233
+	SetEnv, version, Version 2020-06-02
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -35,14 +36,16 @@
 	SetEnv, activewindows, 0
 	SetEnv, allmonitors, 0
 
+	;; Program icon
+	FileInstall, ico_camera.ico, %icofolder%\ico_camera.ico, 0
+
 	;; specific files
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
-	FileInstall, ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
-	FileInstall, ico_camera.ico, %icofolder%\ico_camera.ico, 0
-	FileInstall, ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
-	FileInstall, ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
-	FileInstall, ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
+	FileInstall, ProgramIcons\ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
+	FileInstall, ProgramIcons\ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
+	FileInstall, ProgramIcons\ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
+	FileInstall, ProgramIcons\ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
 
 	;; Common ico
 	FileInstall, SharedIcons\ico_about.ico, %icofolder%\ico_about.ico, 0
