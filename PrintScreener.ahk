@@ -13,6 +13,7 @@
 ;;	2018-03-24-1834 - another some updates
 ;;	2018-05-11-2233 bug tracking
 ;;	2020-06-02 some updates to keep working properly and install batch
+;;	2021-01-27 include cursor or not with the printscreen
 
 ;;--- Softwares var options files ---
 
@@ -23,7 +24,7 @@
 
 	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2020-06-02
+	SetEnv, version, Version 2021-01-27
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -46,6 +47,7 @@
 	FileInstall, ProgramIcons\ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
 	FileInstall, ProgramIcons\ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
 	FileInstall, ProgramIcons\ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
+	FileInstall, ProgramIcons\ico_cursor.ico, %icofolder%\ico_cursor.ico, 0
 
 	;; Common ico
 	FileInstall, SharedIcons\ico_about.ico, %icofolder%\ico_about.ico, 0
@@ -64,6 +66,7 @@
 	IniRead, activewindows, PrintScreener.ini, options, activewindows
 	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 	IniRead, interval, PrintScreener.ini, options, interval
+	IniRead, IncludeCursor, PrintScreener.ini, options, IncludeCursor
 
 ;;--- Menu Tray options ---
 
@@ -110,6 +113,8 @@
 	Menu, tray, add,
 	Menu, tray, add, Sound On/Off = %sound%, soundonoff 			; Sound on off
 	Menu, Tray, Icon, Sound On/Off = %sound%, %icofolder%\ico_Sound.ico
+	Menu, tray, add, IncludeCursor On/Off = %IncludeCursor%, IncludeCursoronoff 	; IncludeCursor on off
+	Menu, Tray, Icon, IncludeCursor On/Off = %IncludeCursor%, %icofolder%\ico_cursor.ico
 	Menu, tray, add,
 	Menu, tray, add, Interval take On/Off = %loopback%, startstop
 	Menu, tray, add, Interval take = %interval% Sec., interval 		; Take at interval.
@@ -141,7 +146,8 @@ start:
 		IniRead, activewindows, PrintScreener.ini, options, activewindows
 		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 		IniRead, interval, PrintScreener.ini, options, interval
-		IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number%
+		IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number% IncludeCursor=%IncludeCursor%
+		IniRead, IncludeCursor, PrintScreener.ini, options, IncludeCursor
 
 	KeyWait, PrintScreen , D
 
@@ -316,6 +322,29 @@ soundonoff:
 	TrayTip, %title%, Sound disabled %sound%, 2, 2
 	Menu, Tray, Rename, Sound On/Off = 1, Sound On/Off = 0
 	Goto, Start
+	
+IncludeCursoronoff:
+	IfEqual, IncludeCursor, 1, goto, disableIncludeCursor
+	IfEqual, IncludeCursor, 0, goto, enableIncludeCursor
+	msgbox, error_03 IncludeCursor error IncludeCursor=%IncludeCursor%
+	Goto, Start
+
+	enableIncludeCursor:
+	SoundPlay, click.mp3, wait
+	IniWrite, 1, PrintScreener.ini, options, IncludeCursor
+	IniWrite, 1, C:\Program Files\IrfanView\i_view64.ini, Capture, IncludeCursor
+	SetEnv, sound, 1
+	TrayTip, %title%, IncludeCursor enabled %IncludeCursor%, 2, 2
+	Menu, Tray, Rename, IncludeCursor On/Off = 0, IncludeCursor On/Off = 1
+	Goto, Start
+
+	disableIncludeCursor:
+	IniWrite, 0, PrintScreener.ini, options, IncludeCursor
+	IniWrite, 0, C:\Program Files\IrfanView\i_view64.ini, Capture, IncludeCursor
+	SetEnv, sound, 0
+	TrayTip, %title%, Sound IncludeCursor %IncludeCursor%, 2, 2
+	Menu, Tray, Rename, IncludeCursor On/Off = 1, IncludeCursor On/Off = 0
+	Goto, Start
 
 interval:
 	SetEnv, oldinterval, %interval%
@@ -436,7 +465,7 @@ GuiClose:
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	SoundPlay, snd_click.mp3
-	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nPhoto=C:\Users\%A_Username%\Pictures\ AND C:\PrintScreener (mklink)`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
+	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nPhoto=C:\Users\%A_Username%\Pictures\`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	Return
 
@@ -536,9 +565,6 @@ webpage:
 ;              You just DO WHAT THE FUCK YOU WANT TO.
 ;
 ;		     NO FUCKING WARRANTY AT ALL
-;
-;      The warranty is included in your anus. Look carefully you
-;             might miss all theses small characters.
 ;
 ;	As is customary and in compliance with current global and
 ;	interplanetary regulations, the author of these pages disclaims
