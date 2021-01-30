@@ -151,7 +151,8 @@ start:
 
 	KeyWait, PrintScreen , D
 
-	send, #c
+	;; send, !c		;; removed to ask you if you want or not
+		IfEqual, debug, 1, MsgBox, (;; send, !c) !c ? Cursor dissapear ?
 
 	intervalstart:
 		Menu, Tray, Icon, %icofolder%\ico_camtake.ico
@@ -215,13 +216,13 @@ start:
 		IfEqual, loopback, 1, sleep, %interval%000
 		IfEqual, loopback, 1, goto, intervalstart
 		Sleep, 250		; needed mouse reappear to fast (125 ms min)
-		send, #c
+		;; send, !c
 		Goto, start
 
 ;;--- Click on tray ---
 
 printtrayall:
-	send, #c
+	;; send, !c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count2:
@@ -238,13 +239,13 @@ printtrayall:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 	Sleep, 250		; needed mouse reappear to fast (125 ms min)
-	send, #c
+	;; send, !c
 	goto, start
 
 printtrayactive:
 	TrayTip, %title%, Click on a Windows with left mouse button !, 1, 2
 	KeyWait, LButton, D
-	send, #c
+	;; send, !c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count3:
@@ -261,13 +262,13 @@ printtrayactive:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	Sleep, 250		; needed mouse reappear to fast (125 ms min)
-	send, #c
+	;; send, !c
 	goto, start
 
 printtrayscreen:
 	TrayTip, %title%, Click on a Windows with left mouse button !, 1, 2
 	KeyWait, LButton, D
-	send, #c
+	;; send, !c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	IfEqual, debug, 1, sleep, 2000
 	count4:
@@ -284,7 +285,7 @@ printtrayscreen:
 	run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	Sleep, 250		; needed mouse reappear to fast (125 ms min)
-	send, #c
+	;; send, !c
 	goto, start
 
 ;;--- Options ---
@@ -363,7 +364,9 @@ interval:
 
 ;;--- Founctions ---
 
-#c::SystemCursor("Toggle")				; Win+C hotkey to toggle the cursor on and off.
+;; inactive function i'll do with irfan and ask you if you want it
+
+!c::SystemCursor("Toggle")				; Win+C hotkey to toggle the cursor on and off.
 
 SystemCursor(OnOff=1)   ; INIT = "I","Init"; OFF = 0,"Off"; TOGGLE = -1,"T","Toggle"; ON = others
 {
