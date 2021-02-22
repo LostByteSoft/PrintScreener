@@ -14,6 +14,7 @@
 ;;	2018-05-11-2233 bug tracking
 ;;	2020-06-02 some updates to keep working properly and install batch
 ;;	2021-01-27 include cursor or not with the printscreen
+;;	2021-02-22 change the naming files to 2021-02-22-123456
 
 ;;--- Softwares var options files ---
 
@@ -24,7 +25,7 @@
 
 	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2021-01-27
+	SetEnv, version, Version 2021-02-22
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -37,10 +38,8 @@
 	SetEnv, activewindows, 0
 	SetEnv, allmonitors, 0
 
-	;; Program icon
+	;; Program Files
 	FileInstall, ico_camera.ico, %icofolder%\ico_camera.ico, 0
-
-	;; specific files
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
 	FileInstall, ProgramIcons\ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
@@ -67,6 +66,9 @@
 	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 	IniRead, interval, PrintScreener.ini, options, interval
 	IniRead, IncludeCursor, PrintScreener.ini, options, IncludeCursor
+
+	;; t_TimeFormat := "yyyy-MM-dd-HHmmss"
+	t_TimeFormat := "yyyy-MM-dd-HHmmss"
 
 ;;--- Menu Tray options ---
 
@@ -146,7 +148,7 @@ start:
 		IniRead, activewindows, PrintScreener.ini, options, activewindows
 		IniRead, allmonitors, PrintScreener.ini, options, allmonitors
 		IniRead, interval, PrintScreener.ini, options, interval
-		IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number% IncludeCursor=%IncludeCursor%
+		IfEqual, debug, 1, MsgBox, (atart) A_Username=%A_Username% activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% debug=%debug% sound=%sound% number=%number% IncludeCursor=%IncludeCursor% t_TimeFormat=%t_TimeFormat%
 		IniRead, IncludeCursor, PrintScreener.ini, options, IncludeCursor
 
 	KeyWait, PrintScreen , D
@@ -157,16 +159,9 @@ start:
 	intervalstart:
 		Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 
-	count:
-		SetEnv, number, 1
-		count1:
-		;; Actual user
-		IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, playsound
-		IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-		;; Public user
-		;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, playsound
-		;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-		goto, count1
+	count:			; to have the name : 2021-02-22-102523.jpg
+		FormatTime t_NowTime, , %t_TimeFormat%  			; Empty time = A_Now
+		goto, playsound
 
 	playsound:
 		IfEqual, sound, 0, goto, soundskip
@@ -174,31 +169,31 @@ start:
 
 	soundskip:
 		IfEqual, debug, 1, MsgBox, (soundskip) activescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors%
-
-
 		IfEqual, activescreen, 1, goto, screen
 		IfEqual, activewindows, 1, goto, active
 		IfEqual, allmonitors, 1, goto, allmonitors
-
 		msgbox, Error (variable?) activewindows=%activewindows% activescreen=%activescreen% allmonitors=%allmonitors%: Must one variable to be 1 and another to be 0.
 
 	screen:
 		IfEqual, debug, 1, MsgBox, (screen)
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
-		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\%t_NowTime%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
+		;; run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, user profile img folder
+		;; run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the screen where the mouse is, PUBLIC img folder
 		goto, next
 
 	active:
 		IfEqual, debug, 1, MsgBox, (active)
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
-		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\%t_NowTime%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+		;; run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+		;; run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 		goto, next
 
 
 	allmonitors:
 		IfEqual, debug, 1, MsgBox, (allmonitors)
-		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
-		;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
+		run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\%t_NowTime%.jpg", ,hide ;; whole screen, user profile img folder
+		;; run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+		;; run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 		goto, next
 
 		;;  0 = whole screen
@@ -224,19 +219,10 @@ start:
 printtrayall:
 	;; send, !c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
-	IfEqual, debug, 1, sleep, 2000
-	count2:
-	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take2
-	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take2
-	;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	goto, count2
-
-	take2:
 	IfEqual, sound, 0, goto, soundskip2
 	SoundPlay, snd_click.mp3
 	soundskip2:
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, user profile img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\%t_NowTime%.jpg", ,hide ;; whole screen, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=0 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; whole screen, PUBLIC img folder
 	Sleep, 250		; needed mouse reappear to fast (125 ms min)
 	;; send, !c
@@ -247,19 +233,10 @@ printtrayactive:
 	KeyWait, LButton, D
 	;; send, !c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
-	IfEqual, debug, 1, sleep, 2000
-	count3:
-	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take3
-	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
-	;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	goto, take3
-
-	take3:
 	IfEqual, sound, 0, goto, soundskip3
 	SoundPlay, snd_click.mp3
 	soundskip3:
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\%t_NowTime%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	Sleep, 250		; needed mouse reappear to fast (125 ms min)
 	;; send, !c
@@ -270,19 +247,10 @@ printtrayscreen:
 	KeyWait, LButton, D
 	;; send, !c
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
-	IfEqual, debug, 1, sleep, 2000
-	count4:
-	IfNotExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, goto, take4
-	IfExist, C:\Users\%A_Username%\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	;;IfNotExist, C:\Users\Public\Pictures\Picture_%number%.jpg, goto, take3
-	;;IfExist, C:\Users\Public\Pictures\Picture_%number%.jpg, EnvAdd, number, 1
-	goto, take4
-
-	take4:
 	IfEqual, sound, 0, goto, soundskip4
 	SoundPlay, snd_click.mp3
 	soundskip4:
-	run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, user profile img folder
+	run, C:\Program Files\IrfanView\i_view64.exe "/capture=1 /jpgq=100 /convert=C:\Users\%A_Username%\Pictures\%t_NowTime%.jpg", ,hide ;; ONLY the active windows, user profile img folder
 	;;run, C:\Program Files\IrfanView\i_view64.exe "/capture=2 /jpgq=100 /convert=C:\Users\Public\Pictures\Picture_%number%.jpg", ,hide ;; ONLY the active windows, PUBLIC img folder
 	Sleep, 250		; needed mouse reappear to fast (125 ms min)
 	;; send, !c
@@ -468,7 +436,8 @@ GuiClose:
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
 	SoundPlay, snd_click.mp3
-	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS`n`nPhoto=C:\Users\%A_Username%\Pictures\`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
+	FormatTime t_NowTime, , %t_TimeFormat%  			; Empty time = A_Now
+	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS NowTime=%t_NowTime%`n`nPhoto=C:\Users\%A_Username%\Pictures\`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	Return
 
