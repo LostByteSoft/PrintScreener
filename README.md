@@ -6,7 +6,7 @@ Just press "PrintScreen" key : HotKey Printscreen , just take a snapshot of the 
 
 Take a snapshot of the screen or active windows or by click.
 
-![Screenshot](Picture_2.jpg)
+![Screenshot](picture_2.jpg)
 
 Windows 10 does not make a file if you press "PrintScreen", with this simple software it does now.
 
