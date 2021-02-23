@@ -2,15 +2,18 @@
 
 Files and Use
 --------------------------------------------------------------------
-Just press "PrintScreen" key : HotKey Printscreen , just take a snapshot of the screen AHK NEED "iview442_x64_setup.exe" found it here http://www.irfanview.com/64bit.htm
-
-Take a snapshot of the screen or active windows or by click.
-
-![Screenshot](picture_2.jpg)
 
 Windows 10 does not make a file if you press "PrintScreen", with this simple software it does now.
 
+Just press "PrintScreen" key : HotKey Printscreen , just take a snapshot of the screen.
+
+You NEED "iview442_x64_setup.exe" found it here http://www.irfanview.com/64bit.htm
+
+Take a snapshot of the screen or active windows or by click.
+
 The picture appear in your Pictures folder.
+
+![Screenshot](picture_2.jpg)
 
 ![Screenshot](Picture_1.jpg)
 
