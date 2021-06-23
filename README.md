@@ -1,5 +1,7 @@
 # PrintScreener
 
+Updated: 2021-06-20 to support win 11
+
 Files and Use
 --------------------------------------------------------------------
 
@@ -11,7 +13,7 @@ You NEED "iview442_x64_setup.exe" found it here http://www.irfanview.com/64bit.h
 
 Take a snapshot of the screen or active windows or by click.
 
-The picture appear in your Pictures folder.
+The picture appear in your Pictures folder. (C:\Users\$USER\Pictures)
 
 ![Screenshot](picture_2.jpg)
 

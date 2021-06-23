@@ -25,7 +25,7 @@
 
 	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2021-02-22
+	SetEnv, version, Version 2021-06-23
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
@@ -39,9 +39,9 @@
 	SetEnv, allmonitors, 0
 
 	;; Program Files
-	FileInstall, ico_camera.ico, %icofolder%\ico_camera.ico, 0
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
+	FileInstall, ProgramIcons\ico_camera.ico, %icofolder%\ico_camera.ico, 0
 	FileInstall, ProgramIcons\ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
 	FileInstall, ProgramIcons\ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
 	FileInstall, ProgramIcons\ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
