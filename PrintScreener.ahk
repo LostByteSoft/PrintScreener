@@ -25,12 +25,12 @@
 
 	SetEnv, title, PrintScreener
 	SetEnv, mode, Just press PrintScreen : HotKey Printscreen
-	SetEnv, version, Version 2021-06-23
+	SetEnv, version, Version 2022-10-30
 	SetEnv, Author, LostByteSoft
 	SetEnv, interval, 5
 	SetEnv, loopback, 0
 	SetEnv, number, 1
-	SetEnv, icofolder, C:\Program Files\Common Files
+	SetEnv, icofolder, %A_AppData%
 	SetEnv, logoicon, ico_camera.ico
 	SetEnv, debug, 0
 
