@@ -59,6 +59,12 @@ This is the menu tray ! There are no more menu anywhere.
 ![Screenshot](menu.jpg)
 
 
+Disable windows snipping tool
+--------------------------------------------------------------------
+You don't have the need of windows snipping tool with ths software.
+
+![Screenshot](w11tool.jpg)
+
 Licence of use
 --------------------------------------------------------------------
 
