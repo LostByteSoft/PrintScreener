@@ -15,7 +15,9 @@
 ;;	2020-06-02 some updates to keep working properly and install batch
 ;;	2021-01-27 include cursor or not with the printscreen
 ;;	2021-02-22 change the naming files to 2021-02-22-123456
+;;	2026-04-16 update, better support for w11, bug corrections
 
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Softwares var options files ---
 
 	SetWorkingDir, %A_ScriptDir%
@@ -41,16 +43,18 @@
 	;; Program Files
 	FileInstall, snd_click.mp3, snd_click.mp3, 0
 	FileInstall, PrintScreener.ini, PrintScreener.ini, 0
-	FileInstall, ProgramIcons\ico_camera.ico, %icofolder%\ico_camera.ico, 0
-	FileInstall, ProgramIcons\ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
-	FileInstall, ProgramIcons\ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
-	FileInstall, ProgramIcons\ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
-	FileInstall, ProgramIcons\ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
-	FileInstall, ProgramIcons\ico_cursor.ico, %icofolder%\ico_cursor.ico, 0
+	FileInstall, ProgIcons\ico_camera.ico, %icofolder%\ico_camera.ico, 0
+	FileInstall, ProgIcons\ico_camtake.ico, %icofolder%\ico_camtake.ico, 0
+	FileInstall, ProgIcons\ico_Sound.ico, %icofolder%\ico_Sound.ico, 0
+	FileInstall, ProgIcons\ico_monitor.ico, %icofolder%\ico_monitor.ico, 0
+	FileInstall, ProgIcons\ico_fullscreen.ico, %icofolder%\ico_fullscreen.ico, 0
+	FileInstall, ProgIcons\ico_cursor.ico, %icofolder%\ico_cursor.ico, 0
 
 	;; Common ico
 	FileInstall, SharedIcons\ico_about.ico, %icofolder%\ico_about.ico, 0
 	FileInstall, SharedIcons\ico_lock.ico, %icofolder%\ico_lock.ico, 0
+	FileInstall, SharedIcons/ico_debug.ico, %icofolder%\ico_debug.ico, 0
+	FileInstall, SharedIcons/ico_debug_white.ico, %icofolder%\ico_debug_white.ico, 0
 	FileInstall, SharedIcons\ico_options.ico, %icofolder%\ico_options.ico, 0
 	FileInstall, SharedIcons\ico_reboot.ico, %icofolder%\ico_reboot.ico, 0
 	FileInstall, SharedIcons\ico_shut.ico, %icofolder%\ico_shut.ico, 0
@@ -59,6 +63,7 @@
 	FileInstall, SharedIcons\ico_pause.ico, %icofolder%\ico_pause.ico, 0
 	FileInstall, SharedIcons\ico_loupe.ico, %icofolder%\ico_loupe.ico, 0
 	FileInstall, SharedIcons\ico_folder.ico, %icofolder%\ico_folder.ico, 0
+	FileInstall, SharedIcons\ico_windows.ico, %icofolder%\ico_windows.ico, 0
 
 	IniRead, sound, PrintScreener.ini, options, sound
 	IniRead, activescreen, PrintScreener.ini, options, activescreen
@@ -70,24 +75,26 @@
 	;; t_TimeFormat := "yyyy-MM-dd-HHmmss"
 	t_TimeFormat := "yyyy-MM-dd-HHmmss"
 
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Menu Tray options ---
 
 	Menu, Tray, NoStandard
-	Menu, tray, add, ---=== %title% ===---, about
+	Menu, tray, add, ---=== %title% ===---, aboutauthor
 	Menu, Tray, Icon, ---=== %title% ===---, %icofolder%\%logoicon%
 	Menu, tray, add, Show logo, GuiLogo
 	Menu, tray, add, Secret MsgBox, secret					; Secret MsgBox, just show all options and variables of the program.
 	Menu, Tray, Icon, Secret MsgBox, %icofolder%\ico_lock.ico
-	Menu, tray, add, About && ReadMe, author				; infos about author
+	Menu, tray, add, About && ReadMe, aboutauthor				; infos about author
 	Menu, Tray, Icon, About && ReadMe, %icofolder%\ico_about.ico
-	Menu, tray, add, Author %author%, about					; author msg box
+	Menu, tray, add, Author %author%, aboutauthor				; author msg box
 	menu, tray, disable, Author %author%
-	Menu, tray, add, %version%, about					; version of the software
+	Menu, tray, add, %version%, aboutauthor					; version of the software
 	menu, tray, disable, %version%
 	Menu, tray, add, Open project web page, webpage				; open web page project
 	Menu, Tray, Icon, Open project web page, %icofolder%\ico_HotKeys.ico
+
 	Menu, tray, add,
-	Menu, tray, add, --== Control ==--, about
+	Menu, tray, add, --== Control ==--, aboutauthor
 	Menu, Tray, Icon, --== Control ==--, %icofolder%\ico_options.ico
 	;menu, tray, add, Show Gui (Same as click), start			; Default gui open
 	;Menu, Tray, Icon, Show Gui (Same as click), %icofolder%\ico_loupe.ico
@@ -97,6 +104,11 @@
 	Menu, Tray, Icon, Set Debug (Toggle), %icofolder%\ico_debug.ico
 	Menu, tray, add, Open A_WorkingDir, A_WorkingDir			; open where the exe is
 	Menu, Tray, Icon, Open A_WorkingDir, %icofolder%\ico_folder.ico
+	Menu, tray, add, Windows Start Link, OpenStartup
+	Menu, Tray, Icon, Windows Start Link, %icofolder%\ico_windows.ico
+	Menu, tray, add, Open Pictures Folder, Open 				; Open where files are saved
+	Menu, Tray, Icon, Open Pictures Folder, %icofolder%\ico_folder.ico
+
 	Menu, tray, add,
 	Menu, tray, add, Exit %title%, ExitApp					; Close exit program
 	Menu, Tray, Icon, Exit %title%, %icofolder%\ico_shut.ico
@@ -104,27 +116,27 @@
 	Menu, Tray, Icon, Refresh (Ini mod), %icofolder%\ico_reboot.ico
 	Menu, tray, add, Pause (Toggle), pause					; pause the script
 	Menu, Tray, Icon, Pause (Toggle), %icofolder%\ico_pause.ico
+
 	Menu, tray, add,
-	Menu, tray, add, --== Options ==--, about
+	menu, tray, add, --== Options ==--, aboutauthor
 	Menu, Tray, Icon, --== Options ==--, %icofolder%\ico_options.ico
 	Menu, tray, add, Set take ACTIVE = %activescreen%, setactive 		; set active printscreen
 	Menu, Tray, Icon, Set take ACTIVE = %activescreen%, %icofolder%\ico_fullscreen.ico, 1
 	Menu, tray, add, Set take SCREEN = %activewindows%, setscreen 		; set screen printscreen
 	Menu, Tray, Icon, Set take SCREEN = %activewindows%, %icofolder%\ico_monitor.ico, 1
 	Menu, tray, add, Set all SCREEN = %allmonitors%, setallmonitors
-	Menu, tray, add,
 	Menu, tray, add, Sound On/Off = %sound%, soundonoff 			; Sound on off
 	Menu, Tray, Icon, Sound On/Off = %sound%, %icofolder%\ico_Sound.ico
 	Menu, tray, add, IncludeCursor On/Off = %IncludeCursor%, IncludeCursoronoff 	; IncludeCursor on off
 	Menu, Tray, Icon, IncludeCursor On/Off = %IncludeCursor%, %icofolder%\ico_cursor.ico
-	Menu, tray, add,
+	;Menu, tray, add,
 	Menu, tray, add, Interval take On/Off = %loopback%, startstop
 	Menu, tray, add, Interval take = %interval% Sec., interval 		; Take at interval.
 	Menu, Tray, Icon, Interval take = %interval% Sec., %icofolder%\ico_options.ico
+
 	Menu, tray, add,
-	Menu, tray, add, Open Pictures Folder, Open 				; Open where files are saved
-	Menu, Tray, Icon, Open Pictures Folder, %icofolder%\ico_folder.ico
-	Menu, tray, add,
+	Menu, tray, add, ---=== Start menu options ===---, aboutauthor
+	;Menu, Tray, Icon, ---=== Start menu options ===---, %icofolder%\%logoicon%
 	Menu, tray, add, Printscreen Active (Need Click), Printscreen2 			; Take a shot.
 	Menu, Tray, Icon, Printscreen Active (Need Click), %icofolder%\ico_camera.ico
 	Menu, Tray, Default, Printscreen Active (Need Click)
@@ -133,9 +145,10 @@
 	Menu, Tray, Icon, Printscreen (All screen), %icofolder%\ico_camera.ico
 	Menu, tray, add, Printscreen (Screen 1), Printscreen1			; Take a shot.
 	Menu, Tray, Icon, Printscreen (Screen 1), %icofolder%\ico_camera.ico
-	menu, tray, add,
-	Menu, Tray, Tip, Print Screener
 
+	menu, tray, add,
+
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Software start here ---
 
 	TrayTip, %title%, Mouse do not appear : Press Lwin + C !, 1, 2
@@ -164,6 +177,7 @@ start:
 		goto, playsound
 
 	playsound:
+		IfEqual, debug, 1, MsgBox, 1, sound = %sound%
 		IfEqual, sound, 0, goto, soundskip
 		SoundPlay, snd_click.mp3
 
@@ -214,6 +228,7 @@ start:
 		;; send, !c
 		Goto, start
 
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Click on tray ---
 
 printtrayall:
@@ -256,6 +271,7 @@ printtrayscreen:
 	;; send, !c
 	goto, start
 
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Options ---
 
 startstop:
@@ -330,6 +346,7 @@ interval:
 	IniWrite, %interval%, PrintScreener.ini, options, interval
 	goto, start
 
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Founctions ---
 
 ;; inactive function i'll do with irfan and ask you if you want it
@@ -370,6 +387,7 @@ SystemCursor(OnOff=1)   ; INIT = "I","Init"; OFF = 0,"Off"; TOGGLE = -1,"T","Tog
     }
 }
 
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Debug ---
 
 debug:
@@ -377,11 +395,13 @@ debug:
 	IfEqual, debug, 1, goto, debug0
 
 	debug0:
+	Menu, Tray, Icon, %icofolder%\%logoicon%
 	SetEnv, debug, 0
 	TrayTip, %title%, Deactivated ! debug=%debug%, 1, 2
 	Goto, start
 
 	debug1:
+	Menu, Tray, Icon, %icofolder%\ico_debug_white.ico
 	SetEnv, debug, 1
 	TrayTip, %title%, Activated ! debug=%debug%, 1, 2
 	Goto, start
@@ -407,6 +427,12 @@ pause:
 	sleep, 500000
 	goto, sleep2
 
+OpenStartup:
+	;;run, explorer.exe "%A_AppData%\Microsoft\Windows\Start Menu\Programs\Startup"
+	run, explorer.exe "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
+	Return
+
+;;--------------------------------------------------------------------------- SEPARATOR ---------------------------------------------------------------------------
 ;;--- Quit ---
 
 ;; Escape::
@@ -435,22 +461,20 @@ GuiClose:
 
 secret:
 	Menu, Tray, Icon, %icofolder%\ico_camtake.ico
+	IniRead, sound, PrintScreener.ini, options, sound
+	IniRead, activescreen, PrintScreener.ini, options, activescreen
+	IniRead, activewindows, PrintScreener.ini, options, activewindows
+	IniRead, allmonitors, PrintScreener.ini, options, allmonitors
+	IniRead, interval, PrintScreener.ini, options, interval
+	IniRead, IncludeCursor, PrintScreener.ini, options, IncludeCursor
 	SoundPlay, snd_click.mp3
 	FormatTime t_NowTime, , %t_TimeFormat%  			; Empty time = A_Now
 	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`n`nactivescreen=%activescreen% activewindows=%activewindows% allmonitors=%allmonitors% sound=%sound% interval=%interval% loopback=%loopback% number=%number% NEWnumber=YMDHMS NowTime=%t_NowTime%`n`nPhoto=C:\Users\%A_Username%\Pictures\`n`nSet take active print the active windows. Set take screen print the screen where the mouse is. If you have more than 1 monitor set to ALL SCREEN to take ALL screen in one image.
 	Menu, Tray, Icon, %icofolder%\ico_camera.ico
 	Return
 
-about:
-	TrayTip, %title%, Just press PrintScreen by %Author%, 2, 2
-	Return
-
-Version:
-	TrayTip, %title%, %version%, 2, 2
-	Return
-
-author:
-	MsgBox, 64, %title%, %title% %mode% %version% %author% This software is usefull to take pictures of the screen.`n`n`tGo to https://github.com/LostByteSoft
+aboutauthor:
+	MsgBox, 64, %title%, %title%, Just press PrintScreen by %Author% . %title% %mode% %version% %author% This software is usefull to take pictures of the screen.`n`n`tGo to https://github.com/LostByteSoft
 	Return
 
 Printscreen1:

@@ -1,18 +1,22 @@
-@echo ----------------------------------------------------------
-@echo Compile version 2021-06-23
-@echo ----------------------------------------------------------
+@PATH C:\Program Files\AutoHotkey;C:\Program Files\AutoHotkey\Compiler;C:\windows\system32
 @taskkill /im "PrintScreener.exe"
-@echo ----------------------------------------------------------
-@PATH C:\Program Files\AutoHotkey\Compiler;C:\windows\system32
 @if not exist "C:\Program Files\AutoHotkey\Compiler\Ahk2Exe.exe" goto notins
-Ahk2Exe.exe /in "PrintScreener.ahk" /out "PrintScreener.exe" /icon "ProgramIcons\ico_camera.ico" /mpress "0"
-@echo ----------------------------------------------------------
+@if exist "C:\Program Files\AutoHotkey\Compiler\mpress.exe" goto mpress
+
+@echo Mpress IS NOT installed.
+Ahk2Exe.exe /bin "C:\Program Files\AutoHotkey\Compiler\Unicode 64-bit.bin" /in PrintScreener.ahk" /out "PrintScreener.exe" /icon "ProgIcons/ico_camera.ico" /mpress "0"
+@goto exit
+
+:mpress
+@echo Mpress installed.
+Ahk2Exe.exe /bin "C:\Program Files\AutoHotkey\Compiler\Unicode 64-bit.bin" /in "PrintScreener.ahk" /out "PrintScreener.exe" /icon "ProgIcons/ico_camera.ico" /mpress "1"
 @goto exit
 
 :notins
 @echo Ahk is not installed.
-@pause
+@goto exit
 
 :exit
-pause
+@echo Sleep 3 seconds ...
+@timeout /t 3 /nobreak >nul
 @exit
